@@ -1,0 +1,19 @@
+{
+    "project_name": "ZenChat AI",
+    "pricing": {
+        "free": 0,
+        "pro": 199000,
+        "business": 499000
+    },
+    "budget_vnd": 50000000,
+    "team_size": 1,
+    "target_customers": "Chủ shop online, spa, salon, micro-SME 1-5 người tại Việt Nam",
+    "constraints": [
+        "Không gọi vốn",
+        "Bootstrap only", 
+        "1 người vận hành",
+        "Chỉ organic marketing giai đoạn đầu"
+    ],
+    "is_bootstrap": true,
+    "needs_fundraising": false
+}
