@@ -184,4 +184,6 @@ MIT License
 
 **Phạm Phú Nguyễn Hưng** — [@hungpixi](https://github.com/hungpixi)
 
+🏢 **[Comarai](https://comarai.com)** — Companion for Marketing & AI Automation Agency
+
 > Built with 🧠 AI-assisted development. Code là AI giúp, tư duy là của founder.
