@@ -1,0 +1,15 @@
+*
+!app.py
+!pipeline.py
+!config.py
+!utils.py
+!requirements.txt
+!tools/
+!knowledge/
+!web/app/
+!web/package.json
+!web/package-lock.json
+!web/next.config.mjs
+!web/jsconfig.json
+!web/public/
+!output/.gitkeep
