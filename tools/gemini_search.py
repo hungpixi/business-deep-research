@@ -8,9 +8,10 @@ Gemini Search Tool v4 — Rate-limited, cached, with URL resolver.
 import time
 import threading
 import requests
+import openai
 from google import genai
 from google.genai import types
-from config import GEMINI_API_KEY, GEMINI_MODEL_FAST, GEMINI_MODEL_PRO
+from config import GEMINI_API_KEY, GEMINI_MODEL_FAST, GEMINI_MODEL_PRO, PROXY_API_KEY, PROXY_BASE_URL, PROXY_MODEL
 from tools.search_cache import get_cached, set_cached
 
 
@@ -41,8 +42,9 @@ class RateLimiter:
                 self.tokens -= 1
 
 
-# Free tier: 2 RPM cho search grounding, 15 RPM cho generate
-_rate_limiter = RateLimiter(max_per_minute=2)
+# Tuned: 5 RPM for search grounding (with backoff), proxy handles generate
+_rate_limiter = RateLimiter(max_per_minute=5)
+_proxy_client = None
 _client = None
 _url_cache = {}  # In-memory cache for resolved URLs
 
@@ -54,7 +56,18 @@ def get_client():
     return _client
 
 
-def _retry_with_backoff(func, max_retries: int = 4, base_delay: float = 15.0):
+def get_proxy_client():
+    """Get OpenAI-compatible client for Antigravity Manager proxy."""
+    global _proxy_client
+    if _proxy_client is None and PROXY_API_KEY:
+        _proxy_client = openai.OpenAI(
+            api_key=PROXY_API_KEY,
+            base_url=PROXY_BASE_URL or "http://127.0.0.1:8045/v1",
+        )
+    return _proxy_client
+
+
+def _retry_with_backoff(func, max_retries: int = 5, base_delay: float = 30.0):
     for attempt in range(max_retries + 1):
         try:
             return func()
@@ -322,11 +335,33 @@ def gemini_deep_research(topic: str, sub_queries: list[str]) -> str:
 
 
 def gemini_analyze(prompt: str, context: str = "") -> str:
-    """Gemini Pro analysis with retry."""
-    client = get_client()
+    """Gemini analysis — routes through Antigravity proxy if available, else direct."""
     full_prompt = prompt
     if context:
         full_prompt = f"## Context (Research Data):\n{context}\n\n## Task:\n{prompt}"
+    
+    # === Try Antigravity proxy first (no rate limit!) ===
+    proxy = get_proxy_client()
+    if proxy:
+        try:
+            print(f"  🔀 Routing via Antigravity proxy → {PROXY_MODEL or 'gemini-2.5-pro'}")
+            response = proxy.chat.completions.create(
+                model=PROXY_MODEL or "gemini-2.5-pro",
+                messages=[
+                    {"role": "system", "content": "Bạn là Senior Business Analyst. Phân tích chi tiết, có số liệu cụ thể. Viết tiếng Việt."},
+                    {"role": "user", "content": full_prompt},
+                ],
+                temperature=0.2,
+                max_tokens=16000,
+            )
+            result = response.choices[0].message.content
+            if result:
+                return result
+        except Exception as e:
+            print(f"  ⚠️ Proxy failed: {str(e)[:80]}. Fallback to direct...")
+    
+    # === Fallback: Direct Google GenAI SDK ===
+    client = get_client()
     
     def _call_pro():
         _rate_limiter.wait()

@@ -3,7 +3,18 @@
 *.env
 .env.*
 !.env.example
+.settings.json
+context.md
+_temp_context.json
+context_*.json
+*.docx
 .agents/
+
+# Node / Next.js
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
 
 # Python
 __pycache__/

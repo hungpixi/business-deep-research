@@ -12,12 +12,91 @@ Changes vs v3:
 import json
 import re
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from tools.gemini_search import gemini_batch_search, gemini_deep_research, gemini_analyze
 from tools.output_validator import validate_output, format_validation_report
 from utils import load_all_frameworks, load_industry, load_market
 from config import INDUSTRY_FRAMEWORKS, INDUSTRIES, MARKETS
+
+
+# ═══════════════════════════════════════════════
+# PROGRESS TRACKER
+# ═══════════════════════════════════════════════
+
+class ProgressTracker:
+    """Visual progress tracker for terminal output."""
+    def __init__(self, total_steps: int = 5):
+        self.total_steps = total_steps
+        self.current_step = 0
+        self.start_time = time.time()
+        self.step_times = []
+        self.step_names = [
+            "Nghiên Cứu Thị Trường & Đối Thủ",
+            "Chiến Lược & Go-to-Market",
+            "Tài Chính & Chấm Điểm",
+            "Devil's Advocate (Phản Biện)",
+            "Tổng Hợp Business Plan",
+        ]
+    
+    def _progress_bar(self, current, total, width=30):
+        filled = int(width * current / total)
+        bar = "█" * filled + "░" * (width - filled)
+        percent = current / total * 100
+        return f"[{bar}] {percent:.0f}%"
+    
+    def _elapsed(self):
+        elapsed = time.time() - self.start_time
+        mins = int(elapsed // 60)
+        secs = int(elapsed % 60)
+        return f"{mins:02d}:{secs:02d}"
+    
+    def start_step(self, step_num: int, name: str = ""):
+        self.current_step = step_num
+        step_start = time.time()
+        self.step_times.append(step_start)
+        
+        step_name = name or self.step_names[step_num - 1]
+        icons = ["📊", "📐", "💰", "😈", "📝"]
+        icon = icons[step_num - 1] if step_num <= len(icons) else "🔄"
+        
+        print(f"\n{'━' * 60}")
+        print(f"  {self._progress_bar(step_num - 1, self.total_steps)}  ⏱️ {self._elapsed()}")
+        print(f"{'━' * 60}")
+        print(f"  {icon} STEP {step_num}/{self.total_steps}: {step_name.upper()}")
+        print(f"{'━' * 60}")
+        
+        # Show remaining steps
+        for i in range(self.total_steps):
+            if i < step_num - 1:
+                print(f"    ✅ Step {i+1}: {self.step_names[i]}")
+            elif i == step_num - 1:
+                print(f"    ▶️ Step {i+1}: {self.step_names[i]} ← đang chạy")
+            else:
+                print(f"    ⬜ Step {i+1}: {self.step_names[i]}")
+        print()
+    
+    def end_step(self, step_num: int):
+        if self.step_times:
+            step_duration = time.time() - self.step_times[-1]
+            mins = int(step_duration // 60)
+            secs = int(step_duration % 60)
+            print(f"  ✅ Step {step_num} hoàn thành ({mins:02d}:{secs:02d})")
+    
+    def finish(self):
+        total_elapsed = time.time() - self.start_time
+        mins = int(total_elapsed // 60)
+        secs = int(total_elapsed % 60)
+        
+        print(f"\n{'━' * 60}")
+        print(f"  {self._progress_bar(self.total_steps, self.total_steps)}  ⏱️ {mins:02d}:{secs:02d}")
+        print(f"{'━' * 60}")
+        print(f"  🎉 TẤT CẢ 5 STEPS ĐÃ HOÀN THÀNH!")
+        print(f"  ⏱️  Tổng thời gian: {mins} phút {secs} giây")
+        print(f"{'━' * 60}")
+
+_tracker = ProgressTracker()
 
 
 # ═══════════════════════════════════════════════
@@ -195,42 +274,42 @@ def _context_to_prompt_notes(ctx: dict) -> str:
 
 def step_research(business_idea: str, industry: str, market: str, ctx: dict) -> str:
     """Step 1: Market Research + Competitors (2 batch calls)."""
-    print("\n" + "="*60)
-    print("📊 STEP 1/5: NGHIÊN CỨU THỊ TRƯỜNG & ĐỐI THỦ")
-    print("="*60)
+    _tracker.start_step(1)
     
     ind_name = INDUSTRIES.get(industry, industry)
     mkt_name = MARKETS.get(market, market)
     target = ctx.get("target_customers", "SME")
+    advantages = ctx.get("competitive_advantages", [])
+    idea_keywords = business_idea[:100]
     
+    print("  🔎 Batch 1: Nghiên cứu thị trường...")
     batch1 = [
-        f"Quy mô thị trường {ind_name} tại {mkt_name} 2024-2026, CAGR, dự báo tăng trưởng Statista IDC GSO",
-        f"Số lượng {target} tại {mkt_name} 2025, chi tiêu cho phần mềm SaaS, chuyển đổi số",
-        f"Xu hướng AI automation cho {target} {mkt_name} 2025 2026, adoption rate benchmark",
-        f"Chính sách hỗ trợ startup công nghệ {mkt_name} 2025, quy định pháp lý SaaS, PDPA dữ liệu",
+        f"Quy mô thị trường {ind_name} tại {mkt_name} 2024-2026, CAGR, dự báo tăng trưởng, market size",
+        f"Nhu cầu của {target} tại {mkt_name} 2025, chi tiêu cho công nghệ giáo dục, chuyển đổi số",
+        f"Xu hướng AI trong {ind_name} tại {mkt_name} 2025 2026: {idea_keywords}, adoption rate benchmark",
+        f"Chính sách hỗ trợ startup công nghệ {mkt_name} 2025, quy định pháp lý EdTech, bảo vệ dữ liệu",
     ]
     
     result1 = gemini_batch_search(batch1, topic=f"Thị trường {ind_name} tại {mkt_name}")
     
+    print("  🔎 Batch 2: Phân tích đối thủ & chi phí...")
     batch2 = [
-        f"Top đối thủ cạnh tranh SaaS cho {target} {mkt_name} 2025: so sánh pricing features strengths weaknesses",
-        f"Đối thủ quốc tế trong ngành {ind_name}: so sánh giá tính năng, điểm yếu tại {mkt_name}",
-        f"Hành vi chi tiêu mua phần mềm của {target} {mkt_name}, willingness to pay, channels preferred",
-        f"Chi phí cloud hosting API AI cho startup {mkt_name} 2025, pricing tiers MVP SaaS",
+        f"Top đối thủ cạnh tranh cho {target} trong ngành {ind_name} {mkt_name} 2025: so sánh pricing features strengths weaknesses",
+        f"Đối thủ quốc tế trong ngành {ind_name}: {idea_keywords}, so sánh giá tính năng, điểm yếu tại {mkt_name}",
+        f"Hành vi chi tiêu của {target} {mkt_name}, willingness to pay cho sản phẩm {ind_name}, channels preferred",
+        f"Chi phí cloud hosting API AI 3D rendering cho startup {mkt_name} 2025, pricing tiers cho MVP",
     ]
     
     result2 = gemini_batch_search(batch2, topic=f"Đối thủ & Chi phí {ind_name}")
     
-    print("  ✅ Research hoàn thành")
+    _tracker.end_step(1)
     return f"## Market Research\n{result1}\n\n## Competitor & Cost Research\n{result2}"
 
 
 def step_strategy_gtm(business_idea: str, industry: str, market: str,
                       ctx: dict, research_data: str) -> str:
     """Step 2: Strategy + GTM (1 batch + 1 analysis)."""
-    print("\n" + "="*60)
-    print("📐 STEP 2/5: CHIẾN LƯỢC & GO-TO-MARKET")
-    print("="*60)
+    _tracker.start_step(2)
     
     ind_name = INDUSTRIES.get(industry, industry)
     framework_names = INDUSTRY_FRAMEWORKS.get(industry, INDUSTRY_FRAMEWORKS["tech_startup"])
@@ -243,6 +322,7 @@ def step_strategy_gtm(business_idea: str, industry: str, market: str,
         f"Blue ocean cơ hội thị trường ngách SaaS micro-SME {MARKETS.get(market)}, underserved",
         f"SaaS metrics benchmark 2025: gross margin, churn, freemium conversion, LTV/CAC",
     ]
+    print("  🔎 Searching GTM benchmarks...")
     search_data = gemini_batch_search(batch, topic="Strategy & GTM benchmarks")
     
     analysis_prompt = f"""
@@ -280,17 +360,16 @@ Bạn là cựu Partner McKinsey + CMO 15 năm scale SaaS.
 - Viết tiếng Việt | Tables markdown | Thực tế cho bootstrap 1 người
 """
     
+    print("  🧠 Analyzing with Gemini Pro...")
     report = gemini_analyze(analysis_prompt, context=f"## Research:\n{research_data[:4000]}\n\n## Search:\n{search_data}")
-    print("  ✅ Strategy & GTM hoàn thành")
+    _tracker.end_step(2)
     return report
 
 
 def step_financials(business_idea: str, industry: str, market: str,
                     ctx: dict, research_data: str) -> str:
     """Step 3: Financial Analysis + Scoring."""
-    print("\n" + "="*60)
-    print("💰 STEP 3/5: TÀI CHÍNH & CHẤM ĐIỂM")
-    print("="*60)
+    _tracker.start_step(3)
     
     budget = ctx.get("budget_vnd", 50_000_000)
     budget_display = f"{budget / 1_000_000:.0f} triệu VND"
@@ -302,6 +381,7 @@ def step_financials(business_idea: str, industry: str, market: str,
         f"SaaS revenue projection benchmark Year 1-3 monthly MRR growth early stage",
         f"Thuế doanh nghiệp {MARKETS.get(market)} 2025, ưu đãi startup công nghệ",
     ]
+    print("  🔎 Searching financial benchmarks...")
     benchmark_data = gemini_batch_search(batch, topic="Financial benchmarks")
     fin_frameworks = load_all_frameworks(["financial_projections", "investment_analysis"])
     
@@ -342,16 +422,15 @@ Bạn là CFA kiêm serial entrepreneur. Xây dựng MÔ HÌNH TÀI CHÍNH:
 - Verdict decisive, dựa trên data
 """
     
+    print("  🧠 Analyzing financials with Gemini Pro...")
     report = gemini_analyze(analysis_prompt, context=f"## Benchmarks:\n{benchmark_data}\n\n## Research:\n{research_data[:3000]}")
-    print("  ✅ Financial Analysis hoàn thành")
+    _tracker.end_step(3)
     return report
 
 
 def step_devils_advocate(business_idea: str, ctx: dict, all_analysis: str) -> str:
     """Step 4: Devil's Advocate — phản biện và tìm lỗi."""
-    print("\n" + "="*60)
-    print("😈 STEP 4/5: DEVIL'S ADVOCATE (PHẢN BIỆN)")
-    print("="*60)
+    _tracker.start_step(4)
     
     prompt = f"""
 Bạn là DEVIL'S ADVOCATE. Công việc duy nhất: TÌM LỖI và THÁCH THỨC.
@@ -392,17 +471,16 @@ Bạn KHÔNG được đồng ý hay khen. Bạn chỉ được PHÊ BÌNH.
 - Kết luận: "Rủi ro lớn nhất theo tôi là..."
 """
     
+    print("  🧠 Running Devil's Advocate analysis...")
     report = gemini_analyze(prompt, context=all_analysis[:8000])
-    print("  ✅ Devil's Advocate hoàn thành")
+    _tracker.end_step(4)
     return report
 
 
 def step_final_synthesis(business_idea: str, industry: str, market: str,
                          ctx: dict, all_sections: dict) -> str:
     """Step 5: Final synthesis with cross-validation."""
-    print("\n" + "="*60)
-    print("📝 STEP 5/5: TỔNG HỢP BUSINESS PLAN")
-    print("="*60)
+    _tracker.start_step(5)
     
     ind_name = INDUSTRIES.get(industry, industry)
     mkt_name = MARKETS.get(market, market)
@@ -472,8 +550,10 @@ Bạn là Senior Business Plan Writer. TỔNG HỢP thành business plan hoàn c
     for name, content in all_sections.items():
         combined += f"\n{'='*30}\n## {name}\n{'='*30}\n{content}"
     
+    print("  🧠 Synthesizing final business plan with Gemini Pro...")
     report = gemini_analyze(synthesis_prompt, context=combined)
-    print("  ✅ Final Business Plan hoàn thành")
+    _tracker.end_step(5)
+    _tracker.finish()
     return report
 
 
@@ -527,6 +607,10 @@ def run_pipeline(business_idea: str, industry: str = "tech_startup",
             ctx["is_bootstrap"] = True
     
     mode = "🏃 BOOTSTRAP" if ctx.get("is_bootstrap") else "💼 INVESTOR"
+    
+    # Reset tracker
+    global _tracker
+    _tracker = ProgressTracker()
     
     print(f"\n{'='*60}")
     print(f"🚀 BUSINESS DEEP RESEARCH AGENT v4")

@@ -13,6 +13,11 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
+# === Proxy API (Antigravity Tools) ===
+PROXY_API_KEY = os.getenv("PROXY_API_KEY")
+PROXY_BASE_URL = os.getenv("PROXY_BASE_URL", "http://localhost:8045/v1")
+PROXY_MODEL = os.getenv("PROXY_MODEL", "gemini-2.5-pro")
+
 # === Model Configuration ===
 GEMINI_MODEL_FAST = os.getenv("GEMINI_MODEL_FAST", "gemini-2.0-flash")
 GEMINI_MODEL_PRO = os.getenv("GEMINI_MODEL_PRO", "gemini-2.5-pro")

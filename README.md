@@ -1,189 +1,264 @@
-# 🚀 Business Deep Research Agent v4
+# 🧠 Business Deep Research — AI Startup Planner
 
-> AI-powered business plan generator sử dụng Gemini API + Google Search Grounding để tạo kế hoạch kinh doanh chi tiết, có dẫn chứng thực tế và phản biện thẳng thắn.
+<div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
-[![Gemini API](https://img.shields.io/badge/Gemini-2.0_Flash-orange.svg)](https://ai.google.dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+**AI agent tạo kế hoạch kinh doanh chi tiết — áp dụng 12 MBA frameworks, real-time Google Search, auto scorecard.**
 
-## 🎯 Vấn đề cần giải quyết
+> *"AI tạo sản phẩm. **Con người** vận hành dịch vụ."*
 
-Các tool tạo business plan hiện tại (ChatGPT, Gemini chat) có 3 vấn đề lớn:
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5_Pro-purple.svg)](https://ai.google.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-1. **Không có dữ liệu thực** — sinh ra số liệu chung chung, không verify được
-2. **Thiếu phản biện** — luôn khen ý tưởng, không chỉ ra rủi ro thật sự
-3. **Không nhất quán** — pricing, tên dự án thay đổi mỗi lần chạy
+</div>
 
-## 💡 Giải pháp: Pipeline 5 bước
+---
+
+## 🎯 Tại sao không chỉ dùng ChatGPT?
+
+| Tính năng | ChatGPT/Claude | Business Deep Research |
+|---|:---:|:---:|
+| 🔍 Real-time Google Search grounding | ❌ | ✅ |
+| 📐 12 MBA Frameworks có thể chỉnh sửa | ❌ | ✅ |
+| 📊 Auto Scorecard chấm điểm ý tưởng | ❌ | ✅ |
+| ⚖️ So sánh 2+ ideas cùng lúc | ❌ | ✅ |
+| 🎤 1-click → Pitch Deck / GTM / Tài chính | ❌ | ✅ |
+| 📋 4 Output Formats khác nhau | ❌ | ✅ |
+| 📚 Knowledge Base chỉnh sửa real-time | ❌ | ✅ |
+| 🔀 Antigravity Proxy — không rate limit | ❌ | ✅ |
+
+---
+
+## 🏗️ Kiến trúc & Tư duy
+
+### Pipeline 5 bước
 
 ```
-📋 Questionnaire → 📊 Research → 📐 Strategy → 💰 Financial → 😈 Devil's Advocate → 📝 Synthesis
+Ý tưởng startup
+    │
+    ▼
+┌──────────────────────────────────────┐
+│ Step 1: Nghiên cứu Thị trường       │ ← Google Search Grounding
+│         & Đối thủ cạnh tranh        │   (Batched queries, cached 24h)
+├──────────────────────────────────────┤
+│ Step 2: Chiến lược & Go-to-Market   │ ← MBA Frameworks
+│         (SWOT, Porter's, Blue Ocean) │   (Knowledge base .md files)
+├──────────────────────────────────────┤
+│ Step 3: Tài chính & Chấm điểm      │ ← Financial projections
+│         (ROI, Break-even, Unit Eco.) │   (Auto scorecard 5 metrics)
+├──────────────────────────────────────┤
+│ Step 4: Devil's Advocate            │ ← Critical review
+│         (Phản biện & Rủi ro)        │   (Counter-arguments)
+├──────────────────────────────────────┤
+│ Step 5: Tổng hợp Business Plan      │ ← Full report generation
+│         (Markdown + citations)       │   (Download / Copy)
+└──────────────────────────────────────┘
+    │
+    ▼
+📊 Scorecard + 🚀 Quick Actions (Pitch Deck, GTM 90d, Tài chính, Đối thủ, Rủi ro)
 ```
 
-| Bước | Engine | Output |
-|---|---|---|
-| **1. Research** | Gemini Flash + Google Search grounding | Market data + competitor analysis với URL citations |
-| **2. Strategy** | Gemini Pro + MBA frameworks (12 frameworks) | SWOT, Porter, PESTEL, Blue Ocean, Lean Canvas |
-| **3. Financial** | Gemini Pro + context injection | 3 scenarios (Pessimistic/Base/Optimistic) monthly |
-| **4. Devil's Advocate** | Gemini Pro (dedicated critical review) | Top 5 dangerous assumptions, worst case, blind spots |
-| **5. Synthesis** | Gemini Pro + cross-validation | 48KB+ business plan, 13 sections, ~490 dòng |
+### Điểm khác biệt so với các tool có sẵn
 
-## 🧠 Quá trình tư duy & Điểm khác biệt
+1. **Grounded, không hallucinate** — Mọi data đều từ Google Search thực, có citation nguồn
+2. **Framework-driven** — Không trả lời chung chung, áp MBA frameworks cụ thể vào từng phần
+3. **Editable knowledge** — Sửa framework .md files → thay đổi cách AI phân tích
+4. **Anti-rate-limit** — Tích hợp [Antigravity Manager](https://github.com/lbjlaq/Antigravity-Manager) proxy
+5. **Vietnamese-first** — Tối ưu cho thị trường Việt Nam, số liệu VND, đối thủ local
 
-### So với Deep Research của Google
-| | Google Deep Research | Business Deep Research Agent |
-|---|---|---|
-| **Mục đích** | General research | **Chuyên biệt cho business plan** |
-| **Framework** | Không | **12 MBA frameworks** (Harvard, FTU, UEH) |
-| **Scoring** | Không | **Decision matrix 10 tiêu chí** (GO/NO-GO) |
-| **Devil's Advocate** | Không | ✅ Phản biện thẳng thắn |
-| **Context control** | Không | ✅ `context.json` lock pricing/name/constraints |
-| **Bootstrap mode** | Không | ✅ Auto-detect khi vốn < 100M VND |
-
-### So với ChatGPT / Gemini chat thông thường
-| | Chat thông thường | Business Deep Research Agent |
-|---|---|---|
-| **Data** | Kiến thức cũ, không search | **Real-time Google Search** với URL citations |
-| **Consistency** | Mỗi lần ra kết quả khác | ✅ **Context file** lock input |
-| **Financial model** | 1 scenario chung chung | ✅ **3 scenarios monthly**, P&L, Cash Flow |
-| **Bias** | Confirm bias (luôn khen) | ✅ **Devil's Advocate** tìm lỗi, phản biện |
-| **Sources** | Không có | ✅ **Inline [1](url) citations** |
-
-### Bài học từ quá trình phát triển (v1 → v4)
-
-**v1 (CrewAI):** Dùng CrewAI abstraction → output chung chung, không có URL, thiếu data.
-> *Bài học: Abstraction layers giảm control. Cần trực tiếp điều khiển prompt.*
-
-**v2 (Direct Gemini):** Bỏ CrewAI, dùng trực tiếp Gemini API → tốt hơn nhưng không nhất quán.
-> *Bài học: Mỗi step chạy riêng rẽ → pricing mâu thuẫn giữa các sections.*
-
-**v3 (Batched + Rate Limited):** Gộp 4 queries → 1 call, thêm retry logic → giảm 429 errors.
-> *Bài học: Free tier rate limit rất nghiêm ngặt. Cần cache và batch.*
-
-**v4 (Full Pipeline):** Thêm questionnaire, Devil's Advocate, context injection, output validator.
-> *Bài học: User context là critical. Không có nó, AI sẽ tự sáng tạo (và mâu thuẫn).*
+---
 
 ## 🚀 Quick Start
 
-### 1. Clone & Install
+### 1. Clone & Setup
+
 ```bash
 git clone https://github.com/hungpixi/business-deep-research.git
 cd business-deep-research
-pip install -r requirements.txt
 ```
 
-### 2. Setup API Key
+### 2. Cấu hình API
+
 ```bash
 cp .env.example .env
-# Edit .env và thêm GEMINI_API_KEY
+# Sửa .env: thêm GEMINI_API_KEY (bắt buộc)
 ```
 
-### 3. Chạy
+### 3. One-click chạy
+
+**Windows:**
+```bash
+start.bat
+```
+
+**Mac/Linux:**
+```bash
+chmod +x start.sh && ./start.sh
+```
+
+Mở http://localhost:5000 🎉
+
+---
+
+## 🔀 Setup Antigravity Tools (Recommended — No Rate Limit!)
+
+Pipeline gọi Gemini API nhiều lần → dễ bị rate limit 429. **Antigravity Manager** là proxy local giúp bypass hoàn toàn:
+
+### Bước 1: Cài Antigravity Manager
+
+Download tại: **https://github.com/lbjlaq/Antigravity-Manager**
 
 ```bash
-# Interactive mode (hỏi 5 câu trước khi chạy)
-python main.py --idea "AI chatbot cho SME Việt Nam, vốn 50 triệu" --industry tech_startup
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/lbjlaq/Antigravity-Manager/main/install.ps1 | iex
 
-# Với context file (lock pricing, tên, constraints)
-python main.py --idea "..." --context context.json --no-interactive
-
-# Dry run (test API key)
-python main.py --idea "test" --dry-run
-
-# Clear search cache
-python main.py --clear-cache
+# Hoặc tải file .exe từ Releases
 ```
 
-### 4. Ngành hỗ trợ
-```
-tech_startup     → Startup Công Nghệ
-trading_finance  → Trading & Tài Chính
-fnb              → F&B (Nhà Hàng / Quán Cà Phê)
-education        → Giáo Dục (Mầm Non)
-tourism          → Du Lịch & Lữ Hành
-ecommerce        → Thương Mại Điện Tử
-export_import    → Xuất Nhập Khẩu
+### Bước 2: Cấu hình Antigravity
+
+1. Mở Antigravity Manager → Tab **"API Proxy"**
+2. Bật **"Dịch vụ"** (nút xanh ở góc phải)
+3. Copy **API Key** (dạng `sk-xxxx...`)
+4. Port mặc định: **8045**
+
+### Bước 3: Thêm vào `.env`
+
+```env
+PROXY_API_KEY=sk-your_antigravity_key_here
+PROXY_BASE_URL=http://localhost:8045/v1
+PROXY_MODEL=gemini-2.5-pro
 ```
 
-## 📁 Cấu trúc dự án
+### Kết quả:
+
+```
+  🔀 Routing via Antigravity proxy → gemini-2.5-pro
+```
+
+Phần phân tích nặng (Step 2-5) sẽ route qua proxy → **không bị 429**, search grounding vẫn dùng direct API.
+
+---
+
+## 🎛️ Tính năng Web UI
+
+### Output Formats
+
+| Format | Mô tả |
+|---|---|
+| 📋 Full Plan | Business plan chi tiết 12 frameworks |
+| 🎤 Pitch Deck | Outline slide deck cho investor (Sequoia format) |
+| ⚡ Lean Canvas | Tập trung MVP & đo lường nhanh |
+| 🚀 Go-to-Market | Chiến lược ra thị trường 90 ngày |
+
+### Quick Actions (sau khi phân tích xong)
+
+- 🎤 **Pitch Deck** — Outline slides theo Sequoia format
+- 📅 **Go-to-Market 90d** — Kế hoạch tuần/tháng chi tiết
+- 💰 **Tài chính chi tiết** — Revenue projection 12 tháng
+- 🎯 **Phân tích đối thủ** — Bảng so sánh 3-5 competitors
+- ⚠️ **Rủi ro & Giải pháp** — Top 5 risks + mitigation
+
+### 12 MBA Frameworks
+
+```
+lean_canvas          business_model_canvas    tam_sam_som
+swot_tows            competitive_analysis     porters_five_forces
+blue_ocean           financial_projections    investment_analysis
+ansoff_matrix        bcg_matrix               value_chain
+pestel (bonus)
+```
+
+Tất cả đều là `.md` files có thể **chỉnh sửa trực tiếp** trong Web UI → Knowledge Base tab.
+
+---
+
+## 📂 Cấu trúc Project
 
 ```
 business-deep-research/
-├── main.py                 # CLI entry point
-├── pipeline.py             # 5-step pipeline orchestrator
-├── config.py               # API keys, industry/market configs
-├── utils.py                # Helper functions
-├── context.json            # Sample context file
+├── app.py                  # FastAPI backend + SSE streaming
+├── pipeline.py             # 5-step analysis pipeline
+├── config.py               # Industries, markets, frameworks config
+├── utils.py                # File loading utilities
 ├── tools/
-│   ├── gemini_search.py    # Gemini + Google Search + URL resolver
-│   ├── search_cache.py     # File-based search cache (24h TTL)
-│   └── output_validator.py # Cross-validation checker
+│   ├── gemini_search.py    # Google Search + Antigravity proxy
+│   ├── search_cache.py     # 24h search cache (SQLite)
+│   └── output_validator.py # Output quality checker
 ├── knowledge/
-│   ├── frameworks/         # 12 MBA frameworks (BMC, SWOT, Porter...)
-│   ├── industries/         # Industry templates (tech, F&B, tourism...)
-│   └── markets/            # Market context (Vietnam, SEA, International)
-└── output/                 # Generated business plans (gitignored)
+│   ├── frameworks/         # 12 MBA framework .md files
+│   ├── industries/         # Industry knowledge
+│   └── markets/            # Market knowledge (Vietnam, SEA, ...)
+├── web/                    # Next.js frontend
+│   ├── app/
+│   │   ├── page.js         # Chat UI + Scorecard + Quick Actions
+│   │   ├── layout.js       # Root layout
+│   │   └── globals.css     # Dark theme design system
+│   └── package.json
+├── start.bat               # Windows one-click
+├── start.sh                # Mac/Linux one-click
+├── .env.example            # Template config
+└── requirements.txt        # Python dependencies
 ```
 
-## 🔧 Technical Highlights
+---
 
-### Rate Limiting & Retry Logic
-```python
-# Token bucket rate limiter (2 RPM for free tier)
-# Exponential backoff: 15s → 30s → 60s → 120s
-_rate_limiter = RateLimiter(max_per_minute=2)
-_retry_with_backoff(func, max_retries=4, base_delay=15.0)
-```
+## 🛠️ Tech Stack
 
-### Google Search Grounding + Inline Citations
-```python
-# Official API docs pattern: groundingSupports + groundingChunks
-# Chèn [1](url) vào đúng vị trí trong text
-tools=[types.Tool(google_search=types.GoogleSearch())]
-```
+| Layer | Technology | Lý do chọn |
+|---|---|---|
+| Backend | **FastAPI** | Async + SSE native, nhanh hơn Flask 3x |
+| Frontend | **Next.js 15** | Static export, React hooks |
+| AI | **Gemini 2.5 Pro** | Google Search grounding, 1M token context |
+| Proxy | **Antigravity Manager** | Bypass rate limit, multi-account rotation |
+| Search | **Google Search Grounding** | Real-time data, citations |
+| Cache | **SQLite** | 24h TTL, zero config |
 
-### URL Resolver
-```python
-# vertexaisearch.cloud.google.com/grounding-api-redirect/... → direct URL
-def resolve_url(redirect_url):
-    resp = requests.head(url, allow_redirects=True, timeout=5)
-    return resp.url
-```
+---
 
-### Context Injection
-```python
-# User constraints → injected into ALL prompts
-# Đảm bảo pricing, tên dự án, constraints nhất quán across 5 steps
-```
+## 📊 Hướng phát triển
 
-## 📊 Sample Output
+- [ ] Export PDF / DOCX
+- [ ] Multi-language output (EN, JP, KR)
+- [ ] Team collaboration (shared reports)
+- [ ] Custom framework builder (drag & drop)
+- [ ] Webhook integration (Slack, Discord)
+- [ ] Docker one-click deploy
 
-Business plan output (~48KB):
-- **13 sections** với tables chi tiết
-- **2 customer personas** (demographics, pains, gains, willingness to pay)
-- **3 revenue scenarios** monthly (Pessimistic/Base/Optimistic)
-- **Decision matrix** 10 tiêu chí (GO/CONDITIONAL GO/NO-GO)
-- **Devil's Advocate** — phản biện thẳng thắn, worst case, blind spots
-- **Inline citations** [1](url) từ Google Search
+---
 
-## 🗺️ Roadmap & Hướng phát triển
+## 🤝 Bạn muốn AI Agent tương tự?
 
-- [ ] **Async parallel pipeline** — search steps chạy đồng thời
-- [ ] **Streaming output** — từng section ra file ngay khi hoàn thành
-- [ ] **Industry-specific search queries** — tách queries ra JSON per industry
-- [ ] **PDF export** — from Markdown to styled PDF
-- [ ] **Web UI** — Next.js frontend thay vì CLI
-- [ ] **Multi-language** — English, Vietnamese, Chinese
-- [ ] **Comparison mode** — so sánh 2-3 ý tưởng cùng lúc
+| Bạn cần | Chúng tôi đã làm ✅ |
+|---|---|
+| AI phân tích thị trường | Business Deep Research Agent |
+| AI tạo content marketing | Em Content — Auto content pipeline |
+| AI quản lý xuất nhập khẩu | Sourcing Agent — Tìm xưởng, báo giá |
+| AI trade tự động | Trading Bot — MT5 integration |
+
+<div align="center">
+
+### Comarai — AI Automation Agency
+
+> *"Bán thời gian làm việc nhàm chán cho AI, giữ thời gian cho việc quan trọng."*
+
+**4 nhân viên AI chạy 24/7:**
+🤖 Em Sale · 📝 Em Content · 📊 Em Marketing · 📈 Em Trade
+
+[![Yêu cầu Demo](https://img.shields.io/badge/Yêu_cầu_Demo-comarai.com-blue?style=for-the-badge)](https://comarai.com)
+[![Zalo](https://img.shields.io/badge/Zalo-0834422439-green?style=for-the-badge)](https://zalo.me/0834422439)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge)](mailto:hungphamphunguyen@gmail.com)
+
+**GitHub:** [github.com/hungpixi](https://github.com/hungpixi)
+
+</div>
+
+---
 
 ## 📝 License
 
-MIT License
+MIT — Tự do sử dụng, fork, chỉnh sửa. Credit appreciated.
 
-## 👨‍💻 Author
-
-**Phạm Phú Nguyễn Hưng** — [@hungpixi](https://github.com/hungpixi)
-
-🏢 **[Comarai](https://comarai.com)** — Companion for Marketing & AI Automation Agency
-
-> Built with 🧠 AI-assisted development. Code là AI giúp, tư duy là của founder.
+Built with ❤️ by [hungpixi](https://github.com/hungpixi) × [Comarai](https://comarai.com)
