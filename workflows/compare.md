@@ -29,11 +29,13 @@ description: So sánh 2+ ý tưởng startup — bảng scorecard song song
 
 ### Bước 2: Quick Research mỗi ý tưởng
 
-Với MỖI ý tưởng, search nhanh:
-1. Market size & growth
-2. Competition level
-3. Revenue potential
-4. Technical feasibility
+Với MỖI ý tưởng, **dùng search_web** tìm data thực:
+1. Market size & growth rate (CAGR)
+2. Competition level — top 3 đối thủ
+3. Revenue potential — benchmarks ngành
+4. Technical feasibility — chi phí triển khai
+
+> ⚠️ KHÔNG dùng kiến thức cũ. PHẢI search web để có data 2025.
 
 ### Bước 3: Bảng So Sánh
 

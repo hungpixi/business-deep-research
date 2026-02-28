@@ -42,7 +42,7 @@ description: Tạo Pitch Deck outline từ business plan hoặc ý tưởng mớ
 | 9. **Competition** | Positioning matrix 2×2 |
 | 10. **Team** | Founder strengths, advisory |
 | 11. **Financials** | 3-year projection, unit economics |
-| 12. **Ask** | Funding amount, use of funds, timeline |
+| 12. **Ask** | **Nếu gọi vốn:** Funding amount, use of funds, timeline. **Nếu bootstrap:** Action plan 90 ngày, key milestones |
 
 ### Bước 3: Speaker Notes
 

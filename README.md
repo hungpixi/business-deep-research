@@ -42,7 +42,7 @@ irm https://raw.githubusercontent.com/hungpixi/business-deep-research/main/insta
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hungpixi/business-deep-research/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/hungpixi/business-deep-research/main/install.sh | bash
 ```
 
 > Script tự động: kiểm tra prerequisites → tải workflows & skills → clone repo → cấu hình API → cài dependencies → build frontend → tạo desktop shortcut.

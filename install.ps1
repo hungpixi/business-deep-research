@@ -260,8 +260,9 @@ OUTPUT_DIR=./output
 # 6. TẠO DESKTOP SHORTCUT
 # ══════════════════════════════════════════════════
 
-Write-Host "🖥️ Tạo Desktop shortcut?" -ForegroundColor Cyan
-$createShortcut = Read-Host "   Tạo shortcut 'BDR Web UI' trên Desktop? (y/N)"
+if ($cloneOk) {
+    Write-Host "🖥️ Tạo Desktop shortcut?" -ForegroundColor Cyan
+    $createShortcut = Read-Host "   Tạo shortcut 'BDR Web UI' trên Desktop? (y/N)"
 if ($createShortcut -eq "y" -or $createShortcut -eq "Y") {
     $desktop = [Environment]::GetFolderPath("Desktop")
     $shortcutPath = "$desktop\BDR Web UI.lnk"
@@ -274,6 +275,7 @@ if ($createShortcut -eq "y" -or $createShortcut -eq "Y") {
     $shortcut.Save()
     
     Write-Host "   ✅ Shortcut tạo tại: $shortcutPath" -ForegroundColor Green
+    }
 }
 Write-Host ""
 
