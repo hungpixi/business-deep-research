@@ -60,7 +60,7 @@ echo -e "${WHITE}📋 Chọn chế độ cài đặt:${NC}"
 echo -e "${GREEN}   1. Global (mặc định) — Dùng được ở MỌI workspace${NC}"
 echo -e "${YELLOW}   2. Workspace — Chỉ dùng trong project hiện tại${NC}"
 echo ""
-read -p "Chọn (1 hoặc 2, Enter = 1): " mode
+read -p "Chọn (1 hoặc 2, Enter = 1): " mode < /dev/tty
 if [ "$mode" = "2" ]; then
     INSTALL_MODE="workspace"
     WORKFLOWS_DIR="./.agents/workflows"
@@ -187,9 +187,9 @@ if [ "$clone_ok" = true ]; then
         echo -e "${GRAY}   (Nhấn Enter để bỏ qua — có thể cấu hình sau trong ~/.bdr/.env)${NC}"
         echo ""
         
-        read -p "   GEMINI_API_KEY (bắt buộc cho Web UI): " gemini_key
-        read -p "   TAVILY_API_KEY (optional): " tavily_key
-        read -p "   PROXY_API_KEY - Antigravity Manager (optional): " proxy_key
+        read -p "   GEMINI_API_KEY (bắt buộc cho Web UI): " gemini_key < /dev/tty
+        read -p "   TAVILY_API_KEY (optional): " tavily_key < /dev/tty
+        read -p "   PROXY_API_KEY - Antigravity Manager (optional): " proxy_key < /dev/tty
         
         cat > "$ENV_FILE" << EOF
 # === Gemini API ===

@@ -263,18 +263,18 @@ OUTPUT_DIR=./output
 if ($cloneOk) {
     Write-Host "🖥️ Tạo Desktop shortcut?" -ForegroundColor Cyan
     $createShortcut = Read-Host "   Tạo shortcut 'BDR Web UI' trên Desktop? (y/N)"
-if ($createShortcut -eq "y" -or $createShortcut -eq "Y") {
-    $desktop = [Environment]::GetFolderPath("Desktop")
-    $shortcutPath = "$desktop\BDR Web UI.lnk"
-    
-    $shell = New-Object -ComObject WScript.Shell
-    $shortcut = $shell.CreateShortcut($shortcutPath)
-    $shortcut.TargetPath = "$BdrHome\start.bat"
-    $shortcut.WorkingDirectory = $BdrHome
-    $shortcut.Description = "Business Deep Research — Web UI"
-    $shortcut.Save()
-    
-    Write-Host "   ✅ Shortcut tạo tại: $shortcutPath" -ForegroundColor Green
+    if ($createShortcut -eq "y" -or $createShortcut -eq "Y") {
+        $desktop = [Environment]::GetFolderPath("Desktop")
+        $shortcutPath = "$desktop\BDR Web UI.lnk"
+        
+        $shell = New-Object -ComObject WScript.Shell
+        $shortcut = $shell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = "$BdrHome\start.bat"
+        $shortcut.WorkingDirectory = $BdrHome
+        $shortcut.Description = "Business Deep Research — Web UI"
+        $shortcut.Save()
+        
+        Write-Host "   ✅ Shortcut tạo tại: $shortcutPath" -ForegroundColor Green
     }
 }
 Write-Host ""
