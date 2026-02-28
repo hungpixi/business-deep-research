@@ -31,6 +31,51 @@
 
 ---
 
+## ⚡ Cài Đặt Nhanh (Chỉ 1 Lệnh)
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/hungpixi/business-deep-research/main/install.ps1 | iex
+```
+
+### macOS / Linux
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/hungpixi/business-deep-research/main/install.sh | sh
+```
+
+> Script tự động: kiểm tra prerequisites → tải workflows & skills → clone repo → cấu hình API → cài dependencies → build frontend → tạo desktop shortcut.
+
+⚠️ **Windows:** Gặp lỗi ExecutionPolicy? Chạy lệnh này trước:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+---
+
+## 🎮 Slash Commands (Antigravity IDE)
+
+Sau khi cài, mở IDE và gõ:
+
+| Lệnh | Mô tả |
+|---|---|
+| `/research [ý tưởng]` | 🔬 Deep research 5 bước → Business Plan hoàn chỉnh |
+| `/pitch` | 🎤 Tạo Pitch Deck 12 slides (Sequoia format) |
+| `/compare [A] vs [B]` | ⚖️ So sánh 2+ ý tưởng, scorecard song song |
+| `/webui` | 🌐 Mở Web UI tại localhost:5000 |
+| `/bdr-update` | 🔄 Cập nhật lên version mới |
+| `/bdr-help` | ❓ Xem tất cả commands |
+
+**Ví dụ:**
+```
+/research AI chatbot CSKH cho SME Việt Nam
+/compare AI chatbot vs AI content marketing cho SME
+/pitch
+```
+
+---
+
 ## 🏗️ Kiến trúc & Tư duy
 
 ### Pipeline 5 bước
@@ -179,6 +224,19 @@ Tất cả đều là `.md` files có thể **chỉnh sửa trực tiếp** tron
 
 ```
 business-deep-research/
+├── install.ps1             # ⚡ One-command installer (Windows)
+├── install.sh              # ⚡ One-command installer (Mac/Linux)
+├── VERSION                 # Kit version tracking
+├── workflows/              # 🎮 Antigravity slash commands
+│   ├── research.md         # /research — Deep research 5 bước
+│   ├── pitch.md            # /pitch — Pitch Deck Sequoia
+│   ├── compare.md          # /compare — So sánh ý tưởng
+│   ├── webui.md            # /webui — Mở Web UI
+│   ├── bdr-update.md       # /bdr-update — Cập nhật kit
+│   └── bdr-help.md         # /bdr-help — Help
+├── bdr_skills/             # 🧠 AI Skills
+│   ├── bdr-research-engine/  # Pipeline + search strategy
+│   └── bdr-knowledge-base/   # MBA frameworks usage
 ├── app.py                  # FastAPI backend + SSE streaming
 ├── pipeline.py             # 5-step analysis pipeline
 ├── config.py               # Industries, markets, frameworks config
@@ -188,7 +246,7 @@ business-deep-research/
 │   ├── search_cache.py     # 24h search cache (SQLite)
 │   └── output_validator.py # Output quality checker
 ├── knowledge/
-│   ├── frameworks/         # 12 MBA framework .md files
+│   ├── frameworks/         # 14 MBA framework .md files (editable)
 │   ├── industries/         # Industry knowledge
 │   └── markets/            # Market knowledge (Vietnam, SEA, ...)
 ├── web/                    # Next.js frontend
@@ -197,8 +255,8 @@ business-deep-research/
 │   │   ├── layout.js       # Root layout
 │   │   └── globals.css     # Dark theme design system
 │   └── package.json
-├── start.bat               # Windows one-click
-├── start.sh                # Mac/Linux one-click
+├── start.bat               # Windows one-click run
+├── start.sh                # Mac/Linux one-click run
 ├── .env.example            # Template config
 └── requirements.txt        # Python dependencies
 ```
@@ -220,6 +278,7 @@ business-deep-research/
 
 ## 📊 Hướng phát triển
 
+- [x] ⚡ Startup Kit — cài 1 lệnh, slash commands trong IDE
 - [ ] Export PDF / DOCX
 - [ ] Multi-language output (EN, JP, KR)
 - [ ] Team collaboration (shared reports)
